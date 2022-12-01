@@ -12,10 +12,16 @@ object App {
             Elf(calories)
         }
 
-        println(partOne(elves))
+        println("Part one solution: ${partOne(elves)}")
+        println("Part two solution: ${partTwo(elves)}")
+
     }
 
     private fun partOne(elves: List<Elf>): Int {
         return elves.maxBy { elf -> elf.calories.sum() }!!.calories.sum()
+    }
+
+    private fun partTwo(elves: List<Elf>): Int {
+        return elves.sortedBy { elf -> elf.calories.sum() }.reversed().take(3).map{ elf -> elf.calories.sum() }.sum()
     }
 }
