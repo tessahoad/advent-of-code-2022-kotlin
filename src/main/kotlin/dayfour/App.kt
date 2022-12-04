@@ -15,20 +15,38 @@ object App {
             listOf(Assignment(firstStart.toInt(), firstEnd.toInt()), Assignment(secondStart.toInt(), secondEnd.toInt()))
         }
 
-        val fullyContainedAssignmentPairs = pairedAssignments.fold(0) { totalContainments, assignmentPair ->
+        println("Part One solution: ${partOne(pairedAssignments)}")
+        println("Part Two solution: ${partTwo(pairedAssignments)}")
+
+    }
+
+    private fun partOne(assignmentPairs: List<List<Assignment>>): Int {
+        return assignmentPairs.fold(0) { totalContainments, assignmentPair ->
             val firstAssignment = assignmentPair[0]
             val secondAssignment = assignmentPair[1]
             if (firstAssignment.contains(secondAssignment) || secondAssignment.contains(firstAssignment)) totalContainments + 1 else totalContainments
         }
-
-        println("Part One solution: $fullyContainedAssignmentPairs")
-
     }
 
+    private fun partTwo(assignmentPairs: List<List<Assignment>>): Int {
+        return assignmentPairs.fold(0) { totalOverlaps, assignmentPair ->
+            val firstAssignment = assignmentPair[0]
+            val secondAssignment = assignmentPair[1]
+            if (firstAssignment.overlaps(secondAssignment) || secondAssignment.overlaps(firstAssignment)) totalOverlaps + 1 else totalOverlaps
+        }
+    }
 }
 
 class Assignment(private val start: Int, private val end: Int) {
     fun contains(otherAssignment: Assignment): Boolean {
-        return otherAssignment.start >= start && otherAssignment.end <= end
+        val startInRange = otherAssignment.start in start..end
+        val endInRange = otherAssignment.end in start..end
+        return startInRange && endInRange
+    }
+
+    fun overlaps(otherAssignment: Assignment): Boolean {
+        val startInRange = otherAssignment.start in start..end
+        val endInRange = otherAssignment.end in start..end
+        return startInRange || endInRange
     }
 }
