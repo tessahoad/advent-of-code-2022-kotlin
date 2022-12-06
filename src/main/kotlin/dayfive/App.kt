@@ -12,25 +12,35 @@ object App {
 
         val initialArrangement = Arrangement.fromString(unparsedArrangement)
 
+        println("Part one answer: ${partOne(initialArrangement, instructions)}")
+        println("Part two answer: ${partTwo(initialArrangement, instructions)}")
+    }
+
+    private fun partOne(initialArrangement: Arrangement, instructions: List<Instruction>): String {
         val finalArrangement = instructions.fold(initialArrangement) { arrangement, instruction -> arrangement.moveCrates(instruction) }
 
-        val topInStacks = finalArrangement.stackToCrates.toSortedMap().values.map{it[0]}.joinToString("")
+        return finalArrangement.getTopOfStacks()
+    }
 
-        println("Part one answer: $topInStacks")
+    private fun partTwo(initialArrangement: Arrangement, instructions: List<Instruction>): String {
+        val finalArrangement = instructions.fold(initialArrangement) { arrangement, instruction -> arrangement.moveCrates(instruction, true) }
+
+        return finalArrangement.getTopOfStacks()
     }
 }
+class Arrangement(private val stackToCrates: Map<Int, List<Char>>) {
 
+    fun getTopOfStacks(): String {
+        return stackToCrates.toSortedMap().values.map{it[0]}.joinToString("")
+    }
 
-
-class Arrangement(val stackToCrates: Map<Int, List<Char>>) {
-
-    fun moveCrates(instruction: Instruction): Arrangement {
+    fun moveCrates(instruction: Instruction, canPickUpManyCrates: Boolean = false): Arrangement {
         val originList = stackToCrates[instruction.origin]
         val destinationList = stackToCrates[instruction.destination]
-        val cratesToMove = originList!!.take(instruction.quantity)
+        val cratesToMove = if (canPickUpManyCrates) originList!!.take(instruction.quantity) else originList!!.take(instruction.quantity).reversed()
 
         val newOriginList = originList.subList(instruction.quantity, originList.size)
-        val newDestinationList = cratesToMove.reversed() + destinationList!!
+        val newDestinationList = cratesToMove + destinationList!!
         val newStackToCrates = stackToCrates + (instruction.origin to newOriginList) + (instruction.destination to newDestinationList)
         return Arrangement(newStackToCrates)
     }
